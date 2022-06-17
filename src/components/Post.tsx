@@ -40,8 +40,22 @@ export function Post({author, content, publishAt}: PostProps){
     }
 
     function handleNewCommentchange(){
+        event.target.setCustomValidity('');
         setNewCommentText(event.target.value);
     }
+
+    function deleteComment(commentToDelete) {
+        const newCommentsWithoutDeleteOne = comments.filter(comment => {
+            return comment != commentToDelete;
+        })
+        setComments(newCommentsWithoutDeleteOne);
+    }
+
+    function handleNewInvalidComment(){
+        event.target.setCustomValidity('Esse campo é obrigatório!');
+    }
+
+    const isNewCommentEmpty = newCommentText.length === 0;
 
     return(
         <article className={styles.post}>
@@ -77,16 +91,27 @@ export function Post({author, content, publishAt}: PostProps){
                 placeholder='Deixe um comentário'
                 value={newCommentText}
                 onChange={handleNewCommentchange}
+                onInvalid={handleNewInvalidComment}
+                required
                 />
 
                 <footer>
-                    <button type='submit'>Publicar</button>
+                    <button 
+                        type='submit'
+                        disabled={isNewCommentEmpty}>
+                            Publicar
+                    </button>
                 </footer>
             </form>
 
             <div className={styles.commentList}>
                 {comments.map(comment =>{
-                    return <Comment key={comment} content={comment}/>
+                    return (
+                    <Comment 
+                        key={comment} 
+                        content={comment}
+                        onDeleteComment={deleteComment}
+                    />)
                 })}
             </div>
         </article>
